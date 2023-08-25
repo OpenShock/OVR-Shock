@@ -32,14 +32,27 @@ if (WIN32)
     list (APPEND ${project}_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/resources.rc)
 endif ()
 
+set (${project}_SOURCE
+	"src/vr/helpers.h"
+	"src/vr/overlay.h"
+	"src/vr/overlay.cpp"
+	"src/vr/scene-manager.h"
+	"src/vr/scene-manager.cpp"
+	"src/vr/tracked-device.h"
+	"src/vr/tracked-device.cpp"
+	"src/vr/transform.h"
+	"src/vr/transform.cpp"
+)
+
 # Add source to this project's executable.
 add_executable (${project}
 	main.cpp
+	${${project}_SOURCE}
 	${${project}_RESOURCES}
 )
 
 # Add include directories.
-target_include_directories(${project} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${Qt_INCLUDE_DIRS})
+target_include_directories(${project} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src ${Qt_INCLUDE_DIRS})
 
 # Add libraries.
 target_link_libraries(${project} PRIVATE
