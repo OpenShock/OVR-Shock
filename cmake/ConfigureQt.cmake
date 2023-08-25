@@ -30,7 +30,7 @@ set (CMAKE_AUTORCC ON)
 
 message ("Found Qt ${Qt5Core_VERSION}")
 
-target_include_directories (${project} PRIVATE
+set (Qt_INCLUDE_DIRS PRIVATE
     ${Qt5Core_INCLUDE_DIRS}
     ${Qt5Gui_INCLUDE_DIRS}
     ${Qt5OpenGL_INCLUDE_DIRS}
@@ -42,7 +42,7 @@ target_include_directories (${project} PRIVATE
     ${Qt5Network_INCLUDE_DIRS}
 )
 
-target_link_libraries (${project} PRIVATE
+set (Qt_LIBRARIES PRIVATE
 	${Qt5Core_LIBRARIES}
 	${Qt5Gui_LIBRARIES}
 	${Qt5OpenGL_LIBRARIES}
