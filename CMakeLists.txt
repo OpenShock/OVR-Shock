@@ -21,6 +21,7 @@ include(ConfigureQt)
 
 # Find libraries.
 find_package(fmt CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 find_package(OpenVR REQUIRED)
 set (THREADS_PREFER_PTHREAD_FLAG ON)
 find_package (Threads REQUIRED)
@@ -46,6 +47,7 @@ target_link_libraries(${project} PRIVATE
 	${CMAKE_DL_LIBS}
 	${Qt_LIBRARIES}
 	fmt::fmt-header-only
+	glm::glm
 	OpenVR::OpenVR
 )
 if (WIN32)
