@@ -33,13 +33,12 @@ if (WIN32)
 endif ()
 
 set (${project}_SOURCE
+	
 	"src/vr/helpers.h"
 	"src/vr/overlay.h"
 	"src/vr/overlay.cpp"
-	"src/vr/scene-manager.h"
-	"src/vr/scene-manager.cpp"
-	"src/vr/tracked-device.h"
-	"src/vr/tracked-device.cpp"
+	"src/vr/vr_manager.h"
+	"src/vr/vr_manager.cpp"
 	"src/vr/transform.h"
 	"src/vr/transform.cpp"
 )

@@ -3,7 +3,9 @@
 #include "vr/overlay.h"
 #include "vr/transform.h"
 
-#include <glm/glm.hpp>
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 namespace ZapMe::Helpers {
     constexpr bool IntersectRayPlane(
@@ -35,7 +37,7 @@ namespace ZapMe::Helpers {
         intersect3D = rayOrigin + (rayDirection * intersectDistance);
 
         // Calculate the intersection point's coordinates in the plane's local space (xy plane)
-        glm::vec3 intersectionLocal = intersect3D - planeOrigin;
+        const glm::vec3 intersectionLocal = intersect3D - planeOrigin;
         intersectUV.x = glm::dot(intersectionLocal, glm::vec3(1.0f, 0.0f, 0.0f));
         intersectUV.y = glm::dot(intersectionLocal, glm::vec3(0.0f, 1.0f, 0.0f));
 
