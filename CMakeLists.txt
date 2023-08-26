@@ -41,7 +41,7 @@ set (${project}_SOURCE
 	"src/vr/vr_manager.cpp"
 	"src/vr/transform.h"
 	"src/vr/transform.cpp"
-)
+  )
 
 # Add source to this project's executable.
 add_executable (${project}

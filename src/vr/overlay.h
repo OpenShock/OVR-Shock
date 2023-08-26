@@ -1,45 +1,71 @@
 #pragma once
 
-#include <memory>
-
 #include "transform.h"
 
+#include <QOpenGLWidget>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLContext>
+#include <QOffscreenSurface>
+#include <QGraphicsScene>
+#include <QOpenGLPaintDevice>
+#include <QPainter>
 #include <QString>
-
-#include <fmt/core.h>
-
-#include <openvr.h>
-
+#include <QObject>
 #include <glm/vec2.hpp>
+#include <fmt/core.h>
+#include <openvr.h>
+#include <memory>
 
-namespace ZapMe {
+namespace ZapMe::VR {
 
-struct Overlay
-{
-	static std::shared_ptr<Overlay> Create(vr::IVROverlay* ptr, const QString& key, const QString& name, vr::EVROverlayError& error)
-	{
-		vr::VROverlayHandle_t handle;
-		error = ptr->CreateOverlay(key.toLatin1().data(), name.toLatin1().data(), &handle);
-		if (error != vr::VROverlayError_None) {
-			return nullptr;
-		}
+class Overlay : public QObject {
+	Q_OBJECT
+	Q_DISABLE_COPY(Overlay)
 
-		return std::make_shared<Overlay>(ptr, handle, key, name);
-	}
+	friend class VRManager;
+	friend class std::shared_ptr<Overlay>;
 
-	void Destroy()
-	{
-		ptr->DestroyOverlay(handle);
-	}
+	Overlay() = delete;
+public:
+	Overlay(const QString& key, const QString& name);
+	~Overlay() override;
 
-	Transform transform;
-	glm::vec2 uvSize;
-	glm::vec2 uvOriginOffset;
+	bool Initialize();
+	void Destroy();
 
-	vr::IVROverlay* ptr;
-	vr::VROverlayHandle_t handle;
-	QString key;
-	QString name;
+	QWidget* GetRootWidget() const { return m_widget; }
+
+	bool SetIsVisible(bool visible);
+private:
+	void resizeVR(const QRectF& rect);
+	void paintVR();
+
+	QOffscreenSurface* m_surface;
+	QGraphicsScene* m_scene;
+	QOpenGLContext* m_glctx;
+	QWidget* m_widget;
+	QGraphicsProxyWidget* m_proxy;
+
+	struct Canvas {
+		Canvas(const QSize& size);
+
+		bool Render(QGraphicsScene* scene, vr::IVROverlay* overlay, vr::VROverlayHandle_t overlayHandle);
+	private:
+		QOpenGLPaintDevice m_paintDevice;
+		QOpenGLFramebufferObject m_fbo;
+		vr::Texture_t m_tex;
+		QPainter m_painter;
+	};
+
+	std::unique_ptr<Canvas> m_canvas;
+
+	Transform m_transform;
+	glm::vec2 m_uvSize;
+	glm::vec2 m_uvOriginOffset;
+
+	vr::VROverlayHandle_t m_handle;
+	QString m_key;
+	QString m_name;
 };
 
 }

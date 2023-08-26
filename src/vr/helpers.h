@@ -7,7 +7,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
-namespace ZapMe::Helpers {
+namespace ZapMe::VR::Helpers {
     constexpr bool IntersectRayPlane(
         const glm::vec3& rayOrigin,
         const glm::vec3& rayDirection,
@@ -50,15 +50,15 @@ namespace ZapMe::Helpers {
         glm::vec2& intersectUV,
         float& intersectDistance
     ) {
-        if (!IntersectRayPlane(ray.pos, ray.rot, overlay.transform.pos, overlay.transform.rot, intersect3D, intersectUV, intersectDistance)) {
+        if (!IntersectRayPlane(ray.pos, ray.rot, overlay.m_transform.pos, overlay.m_transform.rot, intersect3D, intersectUV, intersectDistance)) {
 			return false;
 		}
 
-        intersectUV += overlay.uvOriginOffset;
+        intersectUV += overlay.m_uvOriginOffset;
 
         return intersectUV.x < 0.0f
     	    || intersectUV.y < 0.0f
-    	    || intersectUV.x > overlay.uvSize.x
-    	    || intersectUV.y > overlay.uvSize.y;
+    	    || intersectUV.x > overlay.m_uvSize.x
+    	    || intersectUV.y > overlay.m_uvSize.y;
     }
 }
