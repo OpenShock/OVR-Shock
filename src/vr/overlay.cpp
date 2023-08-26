@@ -102,6 +102,7 @@ bool ZapMe::VR::Overlay::SetIsVisible(bool visible) {
 }
 
 void ZapMe::VR::Overlay::resizeVR(const QRectF& rect) {
+	m_glctx->makeCurrent(m_surface);
 	m_canvas = std::make_unique<Canvas>(rect.size().toSize());
 }
 
