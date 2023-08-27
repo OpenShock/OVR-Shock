@@ -29,17 +29,9 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // Create example text with Qt and render it to the overlay
-    auto parent = new QWidget();
-    parent->setStyleSheet("QWidget { background: red; }");
-    parent->show();
-
     overlay->Widget()->setStyleSheet("QWidget { background: black; }");
     overlay->SetWidth(0.2f);
     overlay->SetIsVisible(true);
-
-
-
 
     return app.exec();
 }
