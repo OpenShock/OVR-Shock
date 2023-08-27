@@ -1,4 +1,5 @@
-#include "vr/vr_manager.h"
+#include "vr/system.h"
+#include "vr/overlay.h"
 
 #include <QApplication>
 #include <QLabel>
@@ -9,21 +10,22 @@
 #include <thread>
 
 void at_exit() {
+    ZapMe::VR::VRSystem::Shutdown();
 }
 
 int main(int argc, char** argv) {
+    std::atexit(at_exit);
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QApplication app(argc, argv);
 
-    if (!ZapMe::VR::VRManager::Initialize()) {
-		fmt::print("Failed to initialize OpenVR\n");
-		return 1;
-	}
+    if (!ZapMe::VR::VRSystem::Initialize()) {
+        fmt::print("Failed to initialize OpenVR\n");
+        return 1;
+    }
 
-    auto overlay = ZapMe::VR::VRManager::CreateOverlay("test", "test");
-    if (!overlay) {
+    auto overlay = new ZapMe::VR::Overlay("test", "test", &app);
+    if (!overlay->IsOk()) {
         fmt::print("Failed to create overlay\n");
-        ZapMe::VR::VRManager::Shutdown();
         return 1;
     }
 
@@ -32,15 +34,12 @@ int main(int argc, char** argv) {
     parent->setStyleSheet("QWidget { background: red; }");
     parent->show();
 
-    overlay->GetRootWidget()->setStyleSheet("QWidget { background: red; }");
+    overlay->Widget()->setStyleSheet("QWidget { background: black; }");
+    overlay->SetWidth(0.2f);
     overlay->SetIsVisible(true);
 
-    int rv = app.exec();
 
-    // Sleep for 2 minutes
-    std::this_thread::sleep_for(std::chrono::minutes(2));
 
-    ZapMe::VR::VRManager::Shutdown();
 
-    return rv;
+    return app.exec();
 }

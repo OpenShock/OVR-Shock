@@ -33,15 +33,16 @@ if (WIN32)
 endif ()
 
 set (${project}_SOURCE
-	
-	"src/vr/helpers.h"
+	"src/vr/math.h"
+	"src/vr/math.cpp"
 	"src/vr/overlay.h"
 	"src/vr/overlay.cpp"
-	"src/vr/vr_manager.h"
-	"src/vr/vr_manager.cpp"
+	"src/vr/system.h"
+	"src/vr/system_core.cpp"
+	"src/vr/system_input.cpp"
 	"src/vr/transform.h"
 	"src/vr/transform.cpp"
-  )
+)
 
 # Add source to this project's executable.
 add_executable (${project}

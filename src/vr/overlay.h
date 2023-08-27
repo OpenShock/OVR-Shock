@@ -15,30 +15,46 @@
 #include <fmt/core.h>
 #include <openvr.h>
 #include <memory>
+#include <span>
 
 namespace ZapMe::VR {
-
 class Overlay : public QObject {
 	Q_OBJECT
 	Q_DISABLE_COPY(Overlay)
 
-	friend class VRManager;
-	friend class std::shared_ptr<Overlay>;
+	friend class VRInputManager;
 
 	Overlay() = delete;
 public:
-	Overlay(const QString& key, const QString& name);
+	Overlay(const QString& key, const QString& name, QObject* parent = nullptr);
 	~Overlay() override;
 
-	bool Initialize();
-	void Destroy();
+	bool IsOk() const {
+		return m_handle != vr::k_ulOverlayHandleInvalid;
+	}
 
-	QWidget* GetRootWidget() const { return m_widget; }
+	QWidget* Widget() const { return m_widget; }
 
+	bool IsVisible() const;
 	bool SetIsVisible(bool visible);
+
+	float Width() const { return m_width; }
+	bool SetWidth(float width);
+
+	glm::vec2 Size() const { return m_size; }
+
+	Transform Transform() const { return m_transform; }
+	bool SetTransform(const ZapMe::VR::Transform& transform);
+	bool SetTransformRelative(const ZapMe::VR::Transform& transform, std::shared_ptr<Overlay> relativeTo);
+	bool SetTransformRelative(const ZapMe::VR::Transform& transform, vr::TrackedDeviceIndex_t trackedDeviceIndex);
+
+	bool FireMouseEvent(Qt::MouseButton button, const glm::vec2& pos);
+	void MouseNotPresent();
 private:
 	void resizeVR(const QRectF& rect);
 	void paintVR();
+
+	void destroy();
 
 	QOffscreenSurface* m_surface;
 	QGraphicsScene* m_scene;
@@ -59,13 +75,16 @@ private:
 
 	std::unique_ptr<Canvas> m_canvas;
 
-	Transform m_transform;
-	glm::vec2 m_uvSize;
-	glm::vec2 m_uvOriginOffset;
+	ZapMe::VR::Transform m_transform;
+	glm::vec2 m_size;
+	float m_width;
+
+	Qt::MouseButton m_lastMouseButtons;
+	QPointF m_lastMousePos;
+	bool m_lastMousePresent;
 
 	vr::VROverlayHandle_t m_handle;
 	QString m_key;
 	QString m_name;
 };
-
 }
