@@ -39,13 +39,6 @@ vr::HmdMatrix34_t ZapMe::VR::Transform::ToHmdMatrix34() const
 {
 	const glm::mat4 matrix = ToMatrix();
 
-	fmt::print("Matrix:\n");
-	fmt::print("{}  {}  {}  {}\n", matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3]);
-	fmt::print("{}  {}  {}  {}\n", matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3]);
-	fmt::print("{}  {}  {}  {}\n", matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3]);
-	fmt::print("{}  {}  {}  {}\n", matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]);
-	fmt::print("\n");
-
 	vr::HmdMatrix34_t result = { 0 };
 	for (int i = 0; i < 3; ++i)
 	{
@@ -54,12 +47,6 @@ vr::HmdMatrix34_t ZapMe::VR::Transform::ToHmdMatrix34() const
 		result.m[i][2] = matrix[2][i];
 		result.m[i][3] = matrix[3][i];
 	}
-
-	fmt::print("HmdMatrix34_t:\n");
-	fmt::print("{}  {}  {}  {}\n", result.m[0][0], result.m[0][1], result.m[0][2], result.m[0][3]);
-	fmt::print("{}  {}  {}  {}\n", result.m[1][0], result.m[1][1], result.m[1][2], result.m[1][3]);
-	fmt::print("{}  {}  {}  {}\n", result.m[2][0], result.m[2][1], result.m[2][2], result.m[2][3]);
-	fmt::print("\n");
 
 	return result;
 }
