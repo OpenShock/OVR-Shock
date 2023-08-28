@@ -45,7 +45,15 @@ public:
 
 	Transform Transform() const { return m_transform; }
 	bool SetTransform(const ZapMe::VR::Transform& transform);
-	bool SetTransformRelative(const ZapMe::VR::Transform& transform, std::shared_ptr<Overlay> relativeTo);
+
+	enum class TrackedDeviceType {
+		HMD,
+		AnyController,
+		LeftController,
+		RightController,
+	};
+	bool SetTransformRelative(const ZapMe::VR::Transform& transform, Overlay* relativeTo);
+	bool SetTransformRelative(const ZapMe::VR::Transform& transform, TrackedDeviceType trackedDeviceType);
 	bool SetTransformRelative(const ZapMe::VR::Transform& transform, vr::TrackedDeviceIndex_t trackedDeviceIndex);
 
 	bool FireMouseEvent(Qt::MouseButton button, const glm::vec2& pos);

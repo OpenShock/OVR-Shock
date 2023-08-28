@@ -135,7 +135,7 @@ bool ZapMe::VR::Overlay::SetTransform(const ZapMe::VR::Transform& transform) {
 		return false;
 	}
 
-	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix34();
+	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix();
 
 	vr::EVROverlayError error;
 	error = overlay->SetOverlayTransformAbsolute(m_handle, vr::TrackingUniverseStanding, &matrix);
@@ -147,17 +147,71 @@ bool ZapMe::VR::Overlay::SetTransform(const ZapMe::VR::Transform& transform) {
 	return true;
 }
 
-bool ZapMe::VR::Overlay::SetTransformRelative(const ZapMe::VR::Transform& transform, std::shared_ptr<Overlay> relativeTo) {
+bool ZapMe::VR::Overlay::SetTransformRelative(const ZapMe::VR::Transform& transform, Overlay* relativeTo) {
+	if (relativeTo == nullptr || relativeTo == this) {
+		return SetTransform(transform);
+	}
+
 	auto overlay = vr::VROverlay();
 	if (overlay == nullptr) {
 		fmt::print("Failed to get IVROverlay interface\n");
 		return false;
 	}
 
-	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix34();
+	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix();
 
+	// TODO: This feature seems to be broken in OpenVR (And they don't seem to care about providing support for individual developers at all, so I won't bother trying to get it fixed)
 	vr::EVROverlayError error;
 	error = overlay->SetOverlayTransformOverlayRelative(m_handle, relativeTo->m_handle, &matrix);
+	if (error != vr::VROverlayError_None) {
+		fmt::print("Failed to set overlay transform: {}\n", overlay->GetOverlayErrorNameFromEnum(error));
+		return false;
+	}
+
+	vr::VROverlayTransformType transformType;
+	error = overlay->GetOverlayTransformType(m_handle, &transformType);
+	if (error != vr::VROverlayError_None) {
+		fmt::print("Failed to get overlay transform type: {}\n", overlay->GetOverlayErrorNameFromEnum(error));
+		return false;
+	}
+
+	return true;
+}
+
+bool ZapMe::VR::Overlay::SetTransformRelative(const ZapMe::VR::Transform& transform, TrackedDeviceType trackedDeviceType) {
+	if (trackedDeviceType == TrackedDeviceType::HMD) {
+		return SetTransformRelative(transform, vr::k_unTrackedDeviceIndex_Hmd);
+	}
+	
+	vr::ETrackedControllerRole controllerRole;
+	switch (trackedDeviceType) {
+		case TrackedDeviceType::AnyController:
+			controllerRole = vr::TrackedControllerRole_OptOut;
+			break;
+		case TrackedDeviceType::LeftController:
+			controllerRole = vr::TrackedControllerRole_LeftHand;
+			break;
+		case TrackedDeviceType::RightController:
+			controllerRole = vr::TrackedControllerRole_RightHand;
+			break;
+		default:
+			fmt::print("Invalid tracked device type\n");
+			return false;
+	}
+
+	auto system = vr::VRSystem();
+	auto overlay = vr::VROverlay();
+	if (system == nullptr || overlay == nullptr) {
+		fmt::print("Failed to get IVRSystem or IVROverlay interface\n");
+		return false;
+	}
+
+	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix();
+
+	vr::TrackedDeviceIndex_t trackedDeviceIndex = system->GetTrackedDeviceIndexForControllerRole(controllerRole);
+
+	vr::EVROverlayError error;
+	error = overlay->SetOverlayTransformTrackedDeviceRelative(m_handle, trackedDeviceIndex, &matrix);
 	if (error != vr::VROverlayError_None) {
 		fmt::print("Failed to set overlay transform: {}\n", overlay->GetOverlayErrorNameFromEnum(error));
 		return false;
@@ -173,7 +227,7 @@ bool ZapMe::VR::Overlay::SetTransformRelative(const ZapMe::VR::Transform& transf
 		return false;
 	}
 
-	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix34();
+	vr::HmdMatrix34_t matrix = transform.ToHmdMatrix();
 
 	vr::EVROverlayError error;
 	error = overlay->SetOverlayTransformTrackedDeviceRelative(m_handle, trackedDeviceIndex, &matrix);

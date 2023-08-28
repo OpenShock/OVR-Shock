@@ -2,11 +2,18 @@
 
 #include "vr/overlay.h"
 
+#include <openvr.h>
+#include <fmt/format.h>
+#include <vector>
+#include <array>
+
 static std::vector<ZapMe::VR::Overlay*> s_overlays;
+
 void ZapMe::VR::VRSystem::RegisterOverlay(ZapMe::VR::Overlay* overlay)
 {
 	s_overlays.push_back(overlay);
 }
+
 void ZapMe::VR::VRSystem::UnregisterOverlay(ZapMe::VR::Overlay* overlay)
 {
 	s_overlays.erase(std::remove(s_overlays.begin(), s_overlays.end(), overlay), s_overlays.end());

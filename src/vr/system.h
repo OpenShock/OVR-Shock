@@ -1,8 +1,5 @@
 #pragma once
 
-#include <openvr.h>
-#include <array>
-
 namespace ZapMe::VR {
 class Overlay;
 struct VRSystem {

@@ -1,6 +1,24 @@
 #include "vr/math.h"
 
 #include <glm/geometric.hpp>
+#include <glm/gtx/euler_angles.hpp>
+
+constexpr glm::mat4 ZapMe::VR::Math::CreateGlmMat(const glm::vec3& position) {
+    return glm::mat4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        position.x, position.y, position.z, 1.0f
+    );
+}
+
+glm::mat4 ZapMe::VR::Math::CreateGlmMat(const glm::vec3& position, const glm::quat& rotation) {
+    return ZapMe::VR::Math::CreateGlmMat(position) * glm::mat4_cast(rotation);
+}
+
+glm::vec3 ZapMe::VR::Math::GetRotationEuler(const glm::mat4& matrix) {
+    return glm::eulerAngles(glm::quat_cast(matrix));
+}
 
 constexpr bool ZapMe::VR::Math::IntersectRayPlane(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const glm::vec3& planeOrigin, const glm::vec3& planeNormal, glm::vec3& intersect3D, glm::vec2& intersectUV, float& intersectDistance) {
     // Calculate the dot product of the ray direction and the plane normal

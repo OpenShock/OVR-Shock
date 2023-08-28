@@ -33,6 +33,9 @@ if (WIN32)
 endif ()
 
 set (${project}_SOURCE
+	"src/vr/conversion.h"
+	"src/vr/debug.h"
+	"src/vr/debug.cpp"
 	"src/vr/math.h"
 	"src/vr/math.cpp"
 	"src/vr/overlay.h"
