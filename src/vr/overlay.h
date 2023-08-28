@@ -33,7 +33,8 @@ public:
 		return m_handle != vr::k_ulOverlayHandleInvalid;
 	}
 
-	QWidget* Widget() const { return m_widget; }
+	QWidget* Widget() const;
+	bool SetWidget(QWidget* widget);
 
 	bool IsVisible() const;
 	bool SetIsVisible(bool visible);
@@ -62,12 +63,12 @@ private:
 	void resizeVR(const QRectF& rect);
 	void paintVR();
 
+	void removeWidget(QWidget* match);
 	void destroy();
 
 	QOffscreenSurface* m_surface;
 	QGraphicsScene* m_scene;
 	QOpenGLContext* m_glctx;
-	QWidget* m_widget;
 	QGraphicsProxyWidget* m_proxy;
 
 	struct Canvas {

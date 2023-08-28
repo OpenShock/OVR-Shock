@@ -3,6 +3,7 @@
 #include "system.h"
 
 #include <QApplication>
+#include <QGraphicsProxyWidget>
 #include <QGraphicsSceneEvent>
 
 ZapMe::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* parent)
@@ -10,7 +11,6 @@ ZapMe::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* pa
 	, m_surface(new QOffscreenSurface(nullptr, this))
 	, m_scene(new QGraphicsScene(this))
 	, m_glctx(new QOpenGLContext(this))
-	, m_widget(new QWidget(nullptr))
 	, m_proxy(nullptr)
 	, m_canvas(nullptr)
 	, m_transform()
@@ -37,11 +37,6 @@ ZapMe::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* pa
 
 	// Surface and widget
 	m_surface->create();
-	m_widget->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-	m_widget->move(0, 0);
-	m_widget->resize(1024, 1024);
-	m_widget->setMouseTracking(true);
-	m_proxy = m_scene->addWidget(m_widget);
 
 	// VR Overlay
 	auto overlay = vr::VROverlay();
@@ -76,6 +71,31 @@ ZapMe::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* pa
 
 ZapMe::VR::Overlay::~Overlay() {
 	destroy();
+}
+
+QWidget* ZapMe::VR::Overlay::Widget() const {
+	if (m_proxy == nullptr) {
+		return nullptr;
+	}
+
+	return m_proxy->widget();
+}
+
+bool ZapMe::VR::Overlay::SetWidget(QWidget* widget) {
+	removeWidget(nullptr);
+	if (widget == nullptr) {
+		return true;
+	}
+
+	widget->move(0, 0);
+	widget->setMouseTracking(true);
+	widget->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+
+	m_proxy = m_scene->addWidget(widget);
+
+	connect(widget, &QObject::destroyed, [this, widget]() { removeWidget(widget); });
+
+	return true;
 }
 
 bool ZapMe::VR::Overlay::IsVisible() const {
@@ -240,6 +260,11 @@ bool ZapMe::VR::Overlay::SetTransformRelative(const ZapMe::VR::Transform& transf
 }
 
 bool ZapMe::VR::Overlay::FireMouseEvent(Qt::MouseButton button, const glm::vec2& pos) {
+	QWidget* widget = Widget();
+	if (widget == nullptr) {
+		return false;
+	}
+
 	QPointF pt(pos.x, pos.y);
 
 	QGraphicsSceneMouseEvent mouseEvent(QEvent::GraphicsSceneMouseMove);
@@ -248,7 +273,7 @@ bool ZapMe::VR::Overlay::FireMouseEvent(Qt::MouseButton button, const glm::vec2&
 	mouseEvent.setButtonDownPos(button, pt);
 	mouseEvent.setLastPos(m_lastMousePos);
 	mouseEvent.setPos(pt);
-	QApplication::sendEvent(m_widget, &mouseEvent);
+	QApplication::sendEvent(widget, &mouseEvent);
 
 	m_lastMouseButtons = button;
 	m_lastMousePos = pt;
@@ -275,6 +300,21 @@ void ZapMe::VR::Overlay::paintVR() {
 	m_glctx->doneCurrent();
 }
 
+void ZapMe::VR::Overlay::removeWidget(QWidget* match) {
+	if (m_proxy == nullptr) return;
+
+	QWidget* widget = m_proxy->widget();
+	if (widget == nullptr || (match != nullptr && widget != match)) return;
+
+	disconnect(widget, nullptr, this, nullptr);
+	widget->setMouseTracking(false);
+	widget->setWindowFlags(Qt::Widget);
+
+	m_scene->removeItem(m_proxy);
+	m_proxy->deleteLater();
+	m_proxy = nullptr;
+}
+
 void ZapMe::VR::Overlay::destroy() {
 	VRSystem::UnregisterOverlay(this);
 
@@ -282,18 +322,14 @@ void ZapMe::VR::Overlay::destroy() {
 		auto overlay = vr::VROverlay();
 		if (overlay == nullptr) {
 			fmt::print("Failed to get IVROverlay interface\n");
-			return;
-		}
-		else {
+		} else {
 			overlay->DestroyOverlay(m_handle);
 		}
 
 		m_handle = vr::k_ulOverlayHandleInvalid;
 	}
 
-	if (m_widget != nullptr) {
-		m_widget->deleteLater();
-	}
+	removeWidget(nullptr);
 }
 
 ZapMe::VR::Overlay::Canvas::Canvas(const QSize& size)

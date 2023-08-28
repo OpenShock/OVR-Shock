@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QLabel>
+#include <QMovie>
 
 #include <fmt/core.h>
 
@@ -23,28 +24,43 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    auto overlay = new ZapMe::VR::Overlay("test", "test", &app);
-    if (!overlay->IsOk()) {
+    auto overlayA = new ZapMe::VR::Overlay("testA", "testA", &app);
+    if (!overlayA->IsOk()) {
         fmt::print("Failed to create overlay\n");
         return 1;
     }
 
-    auto overlay2 = new ZapMe::VR::Overlay("test2", "test2", &app);
-    if (!overlay->IsOk()) {
+    auto overlayB = new ZapMe::VR::Overlay("testB", "testB", &app);
+    if (!overlayB->IsOk()) {
         fmt::print("Failed to create overlay 2\n");
         return 1;
     }
 
-    overlay->Widget()->setStyleSheet("QWidget { background: black; }");
-    overlay->SetWidth(0.2f);
-    overlay->SetIsVisible(true);
+    QMovie* movie = new QMovie("F:/Hydrus/fc5/c57270d1e60f9bd716e047a59f49836cf28d862bfd7ede9fdab5a8eb19daf534.gif");
+    if (!movie->isValid()) {
+		fmt::print("Failed to load movie\n");
+		return 1;
+	}
+    movie->setCacheMode(QMovie::CacheAll);
 
-    overlay2->Widget()->setStyleSheet("QWidget { background: red; }");
-    overlay2->SetWidth(0.2f);
-    overlay2->SetIsVisible(true);
+    QLabel* labelA = new QLabel();
+    labelA->setMovie(movie);
 
-    overlay->SetTransformRelative(ZapMe::VR::Transform(glm::vec3(0.0f, 0.0f, 0.1f), glm::radians(glm::vec3(0.0f, 0.0f, 45.0f))), ZapMe::VR::Overlay::TrackedDeviceType::LeftController);
-    overlay->SetTransformRelative(ZapMe::VR::Transform(glm::vec3(0.0f, 0.0f, 0.1f), glm::radians(glm::vec3(0.0f, 0.0f, 45.0f))), ZapMe::VR::Overlay::TrackedDeviceType::RightController);
+    QLabel* labelB = new QLabel();
+    labelB->setMovie(movie);
+
+    overlayA->SetWidget(labelA);
+    overlayA->SetWidth(0.2f);
+    overlayA->SetIsVisible(true);
+
+    overlayB->SetWidget(labelB);
+    overlayB->SetWidth(0.2f);
+    overlayB->SetIsVisible(true);
+
+    movie->start();
+
+    overlayA->SetTransformRelative(ZapMe::VR::Transform(glm::vec3(0.0f, 0.0f, 0.1f), glm::radians(glm::vec3(0.0f, 0.0f, 45.0f))), ZapMe::VR::Overlay::TrackedDeviceType::LeftController);
+    overlayB->SetTransformRelative(ZapMe::VR::Transform(glm::vec3(0.0f, 0.0f, 0.1f), glm::radians(glm::vec3(0.0f, 0.0f, 45.0f))), ZapMe::VR::Overlay::TrackedDeviceType::RightController);
 
     return app.exec();
 }
