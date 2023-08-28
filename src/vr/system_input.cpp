@@ -1,6 +1,7 @@
 #include "vr/system.h"
 
 #include "vr/overlay.h"
+#include "vr/tracked_device.h"
 
 #include <openvr.h>
 #include <fmt/format.h>
@@ -19,30 +20,52 @@ void ZapMe::VR::VRSystem::UnregisterOverlay(ZapMe::VR::Overlay* overlay)
 	s_overlays.erase(std::remove(s_overlays.begin(), s_overlays.end(), overlay), s_overlays.end());
 }
 
-
-
 static std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_devices;
 static std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_prevDevices;
 
 void OnDeviceConnected(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
 {
-	fmt::print("Device {} connected\n", index);
+	auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(index);
+	const char* deviceClassStr;
+	switch (deviceClass)
+	{
+		case vr::TrackedDeviceClass_Invalid:
+			fmt::print("[DEVICE #{:0>2}] Invalid device class connected\n", index);
+			return;
+		case vr::TrackedDeviceClass_HMD:
+			fmt::print("[DEVICE #{:0>2}] HMD connected\n", index);
+			break;
+		case vr::TrackedDeviceClass_Controller:
+			fmt::print("[DEVICE #{:0>2}] Controller connected\n", index);
+			break;
+		case vr::TrackedDeviceClass_GenericTracker:
+			fmt::print("[DEVICE #{:0>2}] GenericTracker connected\n", index);
+			break;
+		case vr::TrackedDeviceClass_TrackingReference:
+			fmt::print("[DEVICE #{:0>2}] TrackingReference connected\n", index);
+			break;
+		case vr::TrackedDeviceClass_DisplayRedirect:
+			fmt::print("[DEVICE #{:0>2}] DisplayRedirect connected\n", index);
+			break;
+		default:
+			fmt::print("[DEVICE #{:0>2}] Unknown device class connected\n", index);
+			return;
+	}
 }
 void OnDeviceDisconnected(std::uint32_t index)
 {
-	fmt::print("Device {} disconnected\n", index);
+	fmt::print("[DEVICE #{:0>2}] Disconnected\n", index);
 }
 void OnDevicePoseValidated(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
 {
-	fmt::print("Device {} pose validated\n", index);
+	fmt::print("[DEVICE #{:0>2}] Pose validated\n", index);
 }
 void OnDevicePoseInvalidated(std::uint32_t index)
 {
-	fmt::print("Device {} pose invalidated\n", index);
+	fmt::print("[DEVICE #{:0>2}] Pose invalidated\n", index);
 }
 void OnDevicePoseUpdated(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
 {
-	fmt::print("Device {} pose updated\n", index);
 }
 void ZapMe::VR::VRSystem::PollInput()
 {
@@ -69,10 +92,12 @@ void ZapMe::VR::VRSystem::PollInput()
 			}
 			else
 			{
+				OnDevicePoseInvalidated(i);
 				OnDeviceDisconnected(i);
-				continue;
 			}
 		}
+
+		if (!pose.bDeviceIsConnected) continue;
 
 		if (prevPose.bPoseIsValid != pose.bPoseIsValid)
 		{

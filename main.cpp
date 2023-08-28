@@ -1,9 +1,12 @@
 #include "vr/system.h"
+
 #include "vr/overlay.h"
+#include "vr/overlay_scene.h"
+
+#include "vrwidget.h"
 
 #include <QApplication>
-#include <QLabel>
-#include <QMovie>
+#include <QTimer>
 
 #include <fmt/core.h>
 
@@ -25,42 +28,43 @@ int main(int argc, char** argv) {
     }
 
     auto overlayA = new ZapMe::VR::Overlay("testA", "testA", &app);
-    if (!overlayA->IsOk()) {
+    if (!overlayA->Ok()) {
         fmt::print("Failed to create overlay\n");
         return 1;
     }
 
     auto overlayB = new ZapMe::VR::Overlay("testB", "testB", &app);
-    if (!overlayB->IsOk()) {
+    if (!overlayB->Ok()) {
         fmt::print("Failed to create overlay 2\n");
         return 1;
     }
 
-    QMovie* movie = new QMovie("F:/Hydrus/fc5/c57270d1e60f9bd716e047a59f49836cf28d862bfd7ede9fdab5a8eb19daf534.gif");
-    if (!movie->isValid()) {
-		fmt::print("Failed to load movie\n");
-		return 1;
-	}
-    movie->setCacheMode(QMovie::CacheAll);
+    ZapMe::VRWidget* widgetA = new ZapMe::VRWidget();
+    widgetA->setStyleSheet("QWidget { background-color: gray; }");
 
-    QLabel* labelA = new QLabel();
-    labelA->setMovie(movie);
+    ZapMe::VRWidget* widgetB = new ZapMe::VRWidget();
+    widgetB->setStyleSheet("QWidget { background-color: gray; }");
 
-    QLabel* labelB = new QLabel();
-    labelB->setMovie(movie);
-
-    overlayA->SetWidget(labelA);
+    overlayA->Scene()->SetWidget(widgetA);
     overlayA->SetWidth(0.2f);
-    overlayA->SetIsVisible(true);
+    overlayA->SetVisible(true);
 
-    overlayB->SetWidget(labelB);
+    overlayB->Scene()->SetWidget(widgetB);
     overlayB->SetWidth(0.2f);
-    overlayB->SetIsVisible(true);
+    overlayB->SetVisible(true);
 
-    movie->start();
+    ZapMe::VR::Transform controllerOffset;
+    controllerOffset.SetPosition(glm::vec3(0.0f, 0.05f, 0.1f));
+    controllerOffset.SetRotation(glm::radians(glm::vec3(-90.0f, 0.0f, 0.0f)));
 
-    overlayA->SetTransformRelative(ZapMe::VR::Transform(glm::vec3(0.0f, 0.0f, 0.1f), glm::radians(glm::vec3(0.0f, 0.0f, 45.0f))), ZapMe::VR::Overlay::TrackedDeviceType::LeftController);
-    overlayB->SetTransformRelative(ZapMe::VR::Transform(glm::vec3(0.0f, 0.0f, 0.1f), glm::radians(glm::vec3(0.0f, 0.0f, 45.0f))), ZapMe::VR::Overlay::TrackedDeviceType::RightController);
+    //overlayA->SetTransformRelative(controllerOffset, ZapMe::VR::Overlay::TrackedDeviceType::LeftController);
+    //overlayB->SetTransformRelative(controllerOffset, ZapMe::VR::Overlay::TrackedDeviceType::RightController);
+
+    QTimer* vrLoopTimer = new QTimer(&app);
+    QObject::connect(vrLoopTimer, &QTimer::timeout, [&]() {
+		ZapMe::VR::VRSystem::Update();
+	});
+    vrLoopTimer->start(10);
 
     return app.exec();
 }

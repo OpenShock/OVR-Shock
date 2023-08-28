@@ -33,6 +33,8 @@ if (WIN32)
 endif ()
 
 set (${project}_SOURCE
+	"src/vrwidget.h"
+	"src/vrwidget.cpp"
 	"src/vr/conversion.h"
 	"src/vr/debug.h"
 	"src/vr/debug.cpp"
@@ -40,9 +42,13 @@ set (${project}_SOURCE
 	"src/vr/math.cpp"
 	"src/vr/overlay.h"
 	"src/vr/overlay.cpp"
+	"src/vr/overlay_scene.h"
+	"src/vr/overlay_scene.cpp"
 	"src/vr/system.h"
 	"src/vr/system_core.cpp"
 	"src/vr/system_input.cpp"
+	"src/vr/tracked_device.h"
+	"src/vr/tracked_device.cpp"
 	"src/vr/transform.h"
 	"src/vr/transform.cpp"
 )
