@@ -5,7 +5,7 @@
 
 vr::IVRSystem* s_vrSystem;
 
-bool ZapMe::VR::VRSystem::Initialize() {
+bool ShockLink::VR::VRSystem::Initialize() {
 	vr::EVRInitError error;
 	s_vrSystem = vr::VR_Init(&error, vr::VRApplication_Overlay);
 	if (error != vr::VRInitError_None) {
@@ -16,11 +16,11 @@ bool ZapMe::VR::VRSystem::Initialize() {
 	return true;
 }
 
-void ZapMe::VR::VRSystem::Shutdown() {
+void ShockLink::VR::VRSystem::Shutdown() {
 	s_vrSystem = nullptr;
 	vr::VR_Shutdown();
 }
 
-bool ZapMe::VR::VRSystem::IsInitialized() {
+bool ShockLink::VR::VRSystem::IsInitialized() {
 	return s_vrSystem != nullptr;
 }

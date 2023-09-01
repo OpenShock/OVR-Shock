@@ -3,7 +3,7 @@
 #include <glm/mat4x4.hpp>
 #include <openvr.h>
 
-namespace ZapMe::VR::Conversion {
+namespace ShockLink::VR::Conversion {
 	constexpr glm::mat4 ToGlmMat(const vr::HmdMatrix34_t& matrix) {
 		return glm::mat4(
 			matrix.m[0][0], matrix.m[1][0], matrix.m[2][0], 0.0f,

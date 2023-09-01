@@ -14,7 +14,7 @@
 #include <thread>
 
 void at_exit() {
-    ZapMe::VR::VRSystem::Shutdown();
+    ShockLink::VR::VRSystem::Shutdown();
 }
 
 int main(int argc, char** argv) {
@@ -22,27 +22,27 @@ int main(int argc, char** argv) {
     QCoreApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QApplication app(argc, argv);
 
-    if (!ZapMe::VR::VRSystem::Initialize()) {
+    if (!ShockLink::VR::VRSystem::Initialize()) {
         fmt::print("Failed to initialize OpenVR\n");
         return 1;
     }
 
-    auto overlayA = new ZapMe::VR::Overlay("testA", "testA", &app);
+    auto overlayA = new ShockLink::VR::Overlay("testA", "testA", &app);
     if (!overlayA->Ok()) {
         fmt::print("Failed to create overlay\n");
         return 1;
     }
 
-    auto overlayB = new ZapMe::VR::Overlay("testB", "testB", &app);
+    auto overlayB = new ShockLink::VR::Overlay("testB", "testB", &app);
     if (!overlayB->Ok()) {
         fmt::print("Failed to create overlay 2\n");
         return 1;
     }
 
-    ZapMe::VRWidget* widgetA = new ZapMe::VRWidget();
+    ShockLink::VRWidget* widgetA = new ShockLink::VRWidget();
     widgetA->setStyleSheet("QWidget { background-color: gray; }");
 
-    ZapMe::VRWidget* widgetB = new ZapMe::VRWidget();
+    ShockLink::VRWidget* widgetB = new ShockLink::VRWidget();
     widgetB->setStyleSheet("QWidget { background-color: gray; }");
 
     overlayA->Scene()->SetWidget(widgetA);
@@ -53,16 +53,16 @@ int main(int argc, char** argv) {
     overlayB->SetWidth(0.2f);
     overlayB->SetVisible(true);
 
-    ZapMe::VR::Transform controllerOffset;
+    ShockLink::VR::Transform controllerOffset;
     controllerOffset.SetPosition(glm::vec3(0.0f, 0.05f, 0.1f));
     controllerOffset.SetRotation(glm::radians(glm::vec3(-90.0f, 0.0f, 0.0f)));
 
-    //overlayA->SetTransformRelative(controllerOffset, ZapMe::VR::Overlay::TrackedDeviceType::LeftController);
-    //overlayB->SetTransformRelative(controllerOffset, ZapMe::VR::Overlay::TrackedDeviceType::RightController);
+    //overlayA->SetTransformRelative(controllerOffset, ShockLink::VR::Overlay::TrackedDeviceType::LeftController);
+    //overlayB->SetTransformRelative(controllerOffset, ShockLink::VR::Overlay::TrackedDeviceType::RightController);
 
     QTimer* vrLoopTimer = new QTimer(&app);
     QObject::connect(vrLoopTimer, &QTimer::timeout, [&]() {
-		ZapMe::VR::VRSystem::Update();
+		ShockLink::VR::VRSystem::Update();
 	});
     vrLoopTimer->start(10);
 

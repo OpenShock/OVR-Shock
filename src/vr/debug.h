@@ -8,7 +8,7 @@
 
 namespace vr { struct HmdMatrix34_t; }
 
-namespace ZapMe::VR::Debug {
+namespace ShockLink::VR::Debug {
 	void PrintMat(const glm::mat4& mat);
 	void PrintMat(const vr::HmdMatrix34_t& mat);
 	void PrintQuat(const glm::quat& quat);

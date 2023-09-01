@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <openvr.h>
 
-namespace ZapMe::VR {
+namespace ShockLink::VR {
 struct Transform {
 	Transform();
 	Transform(const glm::mat4& matrix);

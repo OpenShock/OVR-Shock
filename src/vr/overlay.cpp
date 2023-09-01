@@ -8,7 +8,7 @@
 #include <QGraphicsSceneEvent>
 #include <fmt/core.h>
 
-ZapMe::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* parent)
+ShockLink::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* parent)
 	: QObject(parent)
 	, m_handle(vr::k_ulOverlayHandleInvalid)
 	, m_scene(new OverlayScene(this))
@@ -38,7 +38,7 @@ ZapMe::VR::Overlay::Overlay(const QString& key, const QString& name, QObject* pa
 	VRSystem::RegisterOverlay(this);
 }
 
-ZapMe::VR::Overlay::~Overlay() {
+ShockLink::VR::Overlay::~Overlay() {
 	// Unregister overlay
 	VRSystem::UnregisterOverlay(this);
 
@@ -52,11 +52,11 @@ ZapMe::VR::Overlay::~Overlay() {
 	}
 }
 
-bool ZapMe::VR::Overlay::Ok() const {
+bool ShockLink::VR::Overlay::Ok() const {
 	return m_handle != vr::k_ulOverlayHandleInvalid && m_scene != nullptr && m_scene->Ok();
 }
 
-bool ZapMe::VR::Overlay::Visible() const {
+bool ShockLink::VR::Overlay::Visible() const {
 	auto overlay = vr::VROverlay();
 	if (overlay == nullptr) {
 		fmt::print("Failed to get IVROverlay interface\n");
@@ -66,7 +66,7 @@ bool ZapMe::VR::Overlay::Visible() const {
 	return overlay->IsOverlayVisible(m_handle);
 }
 
-void ZapMe::VR::Overlay::SetVisible(bool visible) {
+void ShockLink::VR::Overlay::SetVisible(bool visible) {
 	auto overlay = vr::VROverlay();
 	if (overlay == nullptr) {
 		fmt::print("Failed to get IVROverlay interface\n");
@@ -88,7 +88,7 @@ void ZapMe::VR::Overlay::SetVisible(bool visible) {
 	emit VisibleChanged(visible);
 }
 
-void ZapMe::VR::Overlay::SetWidth(float width) {
+void ShockLink::VR::Overlay::SetWidth(float width) {
 	auto overlay = vr::VROverlay();
 	if (overlay == nullptr) {
 		fmt::print("Failed to get IVROverlay interface\n");

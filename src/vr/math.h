@@ -5,7 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec2.hpp>
 
-namespace ZapMe::VR::Math {
+namespace ShockLink::VR::Math {
     constexpr glm::mat4 CreateGlmMat(const glm::vec3& position);
     glm::mat4 CreateGlmMat(const glm::vec3& position, const glm::quat& rotation);
 

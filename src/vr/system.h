@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ZapMe::VR {
+namespace ShockLink::VR {
 class Overlay;
 struct VRSystem {
 	static bool Initialize();

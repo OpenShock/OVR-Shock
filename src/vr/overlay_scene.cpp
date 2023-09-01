@@ -10,7 +10,7 @@
 
 #include <fmt/core.h>
 
-ZapMe::VR::OverlayScene::OverlayScene(QObject* parent)
+ShockLink::VR::OverlayScene::OverlayScene(QObject* parent)
 	: QObject(parent)
 	, m_proxy(), m_canvas(), m_size()
 	, m_handle(vr::k_ulOverlayHandleInvalid)
@@ -41,15 +41,15 @@ ZapMe::VR::OverlayScene::OverlayScene(QObject* parent)
 	connect(m_scene, &QGraphicsScene::changed, this, &OverlayScene::paintVR);
 }
 
-ZapMe::VR::OverlayScene::~OverlayScene() {
+ShockLink::VR::OverlayScene::~OverlayScene() {
 	removeWidget(nullptr);
 }
 
-vr::VROverlayHandle_t ZapMe::VR::OverlayScene::Handle() const {
+vr::VROverlayHandle_t ShockLink::VR::OverlayScene::Handle() const {
 	return m_handle;
 }
 
-QWidget* ZapMe::VR::OverlayScene::Widget() const {
+QWidget* ShockLink::VR::OverlayScene::Widget() const {
 	if (m_proxy == nullptr) {
 		return nullptr;
 	}
@@ -57,11 +57,11 @@ QWidget* ZapMe::VR::OverlayScene::Widget() const {
 	return m_proxy->widget();
 }
 
-QSize ZapMe::VR::OverlayScene::Size() const {
+QSize ShockLink::VR::OverlayScene::Size() const {
 	return m_size;
 }
 
-void ZapMe::VR::OverlayScene::SetHandle(vr::VROverlayHandle_t handle) {
+void ShockLink::VR::OverlayScene::SetHandle(vr::VROverlayHandle_t handle) {
 	if (!Ok() || m_handle == handle) return;
 
 	m_handle = handle;
@@ -69,7 +69,7 @@ void ZapMe::VR::OverlayScene::SetHandle(vr::VROverlayHandle_t handle) {
 	emit HandleChanged(m_handle);
 }
 
-void ZapMe::VR::OverlayScene::SetWidget(QWidget* widget) {
+void ShockLink::VR::OverlayScene::SetWidget(QWidget* widget) {
 	if (!Ok() || (m_proxy != nullptr && m_proxy->widget() == widget)) {
 		return;
 	}
@@ -91,7 +91,7 @@ void ZapMe::VR::OverlayScene::SetWidget(QWidget* widget) {
 	emit WidgetChanged(widget);
 }
 
-void ZapMe::VR::OverlayScene::resizeVR(const QRectF& rect) {
+void ShockLink::VR::OverlayScene::resizeVR(const QRectF& rect) {
 	if (!Ready()) return;
 
 	m_size = rect.size().toSize();
@@ -103,7 +103,7 @@ void ZapMe::VR::OverlayScene::resizeVR(const QRectF& rect) {
 	emit SizeChanged(m_size);
 }
 
-void ZapMe::VR::OverlayScene::paintVR() {
+void ShockLink::VR::OverlayScene::paintVR() {
 	if (!Ready()) return;
 
 	auto overlay = vr::VROverlay();
@@ -116,7 +116,7 @@ void ZapMe::VR::OverlayScene::paintVR() {
 	m_glctx->doneCurrent();
 }
 
-void ZapMe::VR::OverlayScene::removeWidget(QWidget* match) {
+void ShockLink::VR::OverlayScene::removeWidget(QWidget* match) {
 	if (m_proxy == nullptr) return;
 
 	QWidget* widget = m_proxy->widget();
@@ -133,7 +133,7 @@ void ZapMe::VR::OverlayScene::removeWidget(QWidget* match) {
 	m_proxy = nullptr;
 }
 
-ZapMe::VR::OverlayScene::Canvas::Canvas(const QSize& size)
+ShockLink::VR::OverlayScene::Canvas::Canvas(const QSize& size)
 	: m_paintDevice(size)
 	, m_fbo(size, GL_TEXTURE_2D)
 	, m_tex()
@@ -144,7 +144,7 @@ ZapMe::VR::OverlayScene::Canvas::Canvas(const QSize& size)
 	m_painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
 }
 
-bool ZapMe::VR::OverlayScene::Canvas::Render(QGraphicsScene* scene, vr::IVROverlay* overlay, vr::VROverlayHandle_t overlayHandle) {
+bool ShockLink::VR::OverlayScene::Canvas::Render(QGraphicsScene* scene, vr::IVROverlay* overlay, vr::VROverlayHandle_t overlayHandle) {
 	if (!m_fbo.bind()) {
 		fmt::print("Failed to bind framebuffer\n");
 		return false;
@@ -168,7 +168,7 @@ bool ZapMe::VR::OverlayScene::Canvas::Render(QGraphicsScene* scene, vr::IVROverl
 	return true;
 }
 
-bool ZapMe::VR::OverlayScene::FireMouseEvent(Qt::MouseButton button, const glm::vec2& pos) {
+bool ShockLink::VR::OverlayScene::FireMouseEvent(Qt::MouseButton button, const glm::vec2& pos) {
 	QWidget* widget = Widget();
 	if (widget == nullptr) {
 		return false;

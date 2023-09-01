@@ -5,7 +5,7 @@
 
 class QMouseEvent;
 
-namespace ZapMe {
+namespace ShockLink {
 	class VRWidget : public QWidget {
 		Q_OBJECT
 		Q_DISABLE_COPY(VRWidget)

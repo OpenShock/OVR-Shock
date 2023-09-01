@@ -3,7 +3,7 @@
 #include <openvr.h>
 #include <cstdint>
 
-namespace ZapMe::VR {
+namespace ShockLink::VR {
 struct TrackedDevice
 {
 	enum class DeviceType : std::uint8_t

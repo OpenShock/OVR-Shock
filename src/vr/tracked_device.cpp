@@ -4,25 +4,25 @@
 
 std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_trackedDevicePoses;
 
-vr::TrackedDeviceClass ZapMe::VR::TrackedDevice::GetClass(ZapMe::VR::TrackedDevice::DeviceType deviceType) {
+vr::TrackedDeviceClass ShockLink::VR::TrackedDevice::GetClass(ShockLink::VR::TrackedDevice::DeviceType deviceType) {
 	switch (deviceType) {
-	case ZapMe::VR::TrackedDevice::DeviceType::HMD:
+	case ShockLink::VR::TrackedDevice::DeviceType::HMD:
 		return vr::TrackedDeviceClass_HMD;
-	case ZapMe::VR::TrackedDevice::DeviceType::ControllerAny:
+	case ShockLink::VR::TrackedDevice::DeviceType::ControllerAny:
 		return vr::TrackedDeviceClass_Invalid;
-	case ZapMe::VR::TrackedDevice::DeviceType::ControllerLeft:
-	case ZapMe::VR::TrackedDevice::DeviceType::ControllerRight:
+	case ShockLink::VR::TrackedDevice::DeviceType::ControllerLeft:
+	case ShockLink::VR::TrackedDevice::DeviceType::ControllerRight:
 		return vr::TrackedDeviceClass_Controller;
-	case ZapMe::VR::TrackedDevice::DeviceType::Tracker:
+	case ShockLink::VR::TrackedDevice::DeviceType::Tracker:
 		return vr::TrackedDeviceClass_GenericTracker;
-	case ZapMe::VR::TrackedDevice::DeviceType::TrackingReference:
+	case ShockLink::VR::TrackedDevice::DeviceType::TrackingReference:
 		return vr::TrackedDeviceClass_TrackingReference;
 	default:
 		return vr::TrackedDeviceClass_Invalid;
 	}
 }
 
-vr::TrackedDeviceIndex_t ZapMe::VR::TrackedDevice::GetIndex(ZapMe::VR::TrackedDevice::DeviceType deviceType) {
+vr::TrackedDeviceIndex_t ShockLink::VR::TrackedDevice::GetIndex(ShockLink::VR::TrackedDevice::DeviceType deviceType) {
 	vr::IVRSystem* vrSystem = vr::VRSystem();
 	if (vrSystem == nullptr) {
 		return vr::k_unTrackedDeviceIndexInvalid;
@@ -55,13 +55,13 @@ vr::TrackedDeviceIndex_t ZapMe::VR::TrackedDevice::GetIndex(ZapMe::VR::TrackedDe
 	return vr::k_unTrackedDeviceIndexInvalid;
 }
 
-vr::ETrackedControllerRole ZapMe::VR::TrackedDevice::GetControllerRole(ZapMe::VR::TrackedDevice::DeviceType deviceType) {
+vr::ETrackedControllerRole ShockLink::VR::TrackedDevice::GetControllerRole(ShockLink::VR::TrackedDevice::DeviceType deviceType) {
 	switch (deviceType) {
-	case ZapMe::VR::TrackedDevice::DeviceType::ControllerAny:
+	case ShockLink::VR::TrackedDevice::DeviceType::ControllerAny:
 		return vr::TrackedControllerRole_OptOut;
-	case ZapMe::VR::TrackedDevice::DeviceType::ControllerLeft:
+	case ShockLink::VR::TrackedDevice::DeviceType::ControllerLeft:
 		return vr::TrackedControllerRole_LeftHand;
-	case ZapMe::VR::TrackedDevice::DeviceType::ControllerRight:
+	case ShockLink::VR::TrackedDevice::DeviceType::ControllerRight:
 		return vr::TrackedControllerRole_RightHand;
 	default:
 		return vr::TrackedControllerRole_Invalid;

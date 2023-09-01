@@ -8,14 +8,14 @@
 #include <vector>
 #include <array>
 
-static std::vector<ZapMe::VR::Overlay*> s_overlays;
+static std::vector<ShockLink::VR::Overlay*> s_overlays;
 
-void ZapMe::VR::VRSystem::RegisterOverlay(ZapMe::VR::Overlay* overlay)
+void ShockLink::VR::VRSystem::RegisterOverlay(ShockLink::VR::Overlay* overlay)
 {
 	s_overlays.push_back(overlay);
 }
 
-void ZapMe::VR::VRSystem::UnregisterOverlay(ZapMe::VR::Overlay* overlay)
+void ShockLink::VR::VRSystem::UnregisterOverlay(ShockLink::VR::Overlay* overlay)
 {
 	s_overlays.erase(std::remove(s_overlays.begin(), s_overlays.end(), overlay), s_overlays.end());
 }
@@ -67,7 +67,7 @@ void OnDevicePoseInvalidated(std::uint32_t index)
 void OnDevicePoseUpdated(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
 {
 }
-void ZapMe::VR::VRSystem::PollInput()
+void ShockLink::VR::VRSystem::PollInput()
 {
 	auto system = vr::VRSystem();
 	if (!system) return;

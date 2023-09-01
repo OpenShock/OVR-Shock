@@ -15,7 +15,7 @@ class QGraphicsScene;
 class QOpenGLContext;
 class QGraphicsProxyWidget;
 
-namespace ZapMe::VR {
+namespace ShockLink::VR {
 class OverlayScene : public QObject {
 	Q_OBJECT
 	Q_DISABLE_COPY(OverlayScene)

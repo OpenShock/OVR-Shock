@@ -8,7 +8,7 @@ if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif ()
 
 # Project setup.
-set (project VRTesting)
+set (project ShockLinkVR)
 project (
 	${project}
 	VERSION 0.1.0

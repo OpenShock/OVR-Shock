@@ -10,7 +10,7 @@
 
 class QWidget;
 
-namespace ZapMe::VR {
+namespace ShockLink::VR {
 
 class OverlayScene;
 

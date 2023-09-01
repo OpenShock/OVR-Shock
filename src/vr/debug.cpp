@@ -2,7 +2,7 @@
 
 #include <openvr.h>
 
-void ZapMe::VR::Debug::PrintMat(const glm::mat4& mat) {
+void ShockLink::VR::Debug::PrintMat(const glm::mat4& mat) {
     fmt::print(
         "\t{:>4.1f} {:>4.1f} {:>4.1f} {:>4.1f}\n"
         "\t{:>4.1f} {:>4.1f} {:>4.1f} {:>4.1f}\n"
@@ -15,7 +15,7 @@ void ZapMe::VR::Debug::PrintMat(const glm::mat4& mat) {
     );
 }
 
-void ZapMe::VR::Debug::PrintMat(const vr::HmdMatrix34_t& mat) {
+void ShockLink::VR::Debug::PrintMat(const vr::HmdMatrix34_t& mat) {
     fmt::print(
         "\t{:>4.1f} {:>4.1f} {:>4.1f} {:>4.1f}\n"
         "\t{:>4.1f} {:>4.1f} {:>4.1f} {:>4.1f}\n"
@@ -26,21 +26,21 @@ void ZapMe::VR::Debug::PrintMat(const vr::HmdMatrix34_t& mat) {
     );
 }
 
-void ZapMe::VR::Debug::PrintQuat(const glm::quat& quat) {
+void ShockLink::VR::Debug::PrintQuat(const glm::quat& quat) {
     fmt::print(
         "\t{:>4.1f} {:>4.1f} {:>4.1f} {:>4.1f}\n",
         quat.x, quat.y, quat.z, quat.w
     );
 }
 
-void ZapMe::VR::Debug::PrintVec(const glm::vec4& vec) {
+void ShockLink::VR::Debug::PrintVec(const glm::vec4& vec) {
     fmt::print(
 		"\t{:>4.1f} {:>4.1f} {:>4.1f} {:>4.1f}\n",
 		vec.x, vec.y, vec.z, vec.w
 	);
 }
 
-void ZapMe::VR::Debug::PrintVec(const glm::vec3& vec) {
+void ShockLink::VR::Debug::PrintVec(const glm::vec3& vec) {
     fmt::print(
         "\t{:>4.1f} {:>4.1f} {:>4.1f}\n",
         vec.x, vec.y, vec.z
