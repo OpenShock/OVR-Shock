@@ -47,11 +47,12 @@ set (${project}_SOURCE
 	"src/vr/system.h"
 	"src/vr/system_core.cpp"
 	"src/vr/system_input.cpp"
-	"src/vr/tracked_device.h"
-	"src/vr/tracked_device.cpp"
+	
+	
+	
 	"src/vr/transform.h"
 	"src/vr/transform.cpp"
-)
+ "src/vr/tracking_reference.h" "src/vr/tracking_reference.cpp")
 
 # Add source to this project's executable.
 add_executable (${project}

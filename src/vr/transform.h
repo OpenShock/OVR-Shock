@@ -29,7 +29,23 @@ struct Transform {
 	// Implicit conversion operators
 	inline operator glm::mat4() const { return mat; }
 	inline operator vr::HmdMatrix34_t() const { return ToHmdMatrix(); }
-private:
+
+	// Assignment operators
+	Transform& operator = (const glm::mat4& other);
+	Transform& operator = (const vr::HmdMatrix34_t& other);
+
+	inline bool operator == (const glm::mat4& other) const {
+		return mat == other;
+	}
+	inline bool operator != (const glm::mat4& other) const {
+		return mat != other;
+	}
+	inline bool operator == (const Transform& other) const {
+		return mat == other.mat;
+	}
+	inline bool operator != (const Transform& other) const {
+		return mat != other.mat;
+	}
 	glm::mat4 mat;
 	glm::quat rot;
 	glm::vec3 pos;

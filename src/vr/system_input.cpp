@@ -1,7 +1,7 @@
 #include "vr/system.h"
 
 #include "vr/overlay.h"
-#include "vr/tracked_device.h"
+#include "vr/tracking_reference.h"
 
 #include <openvr.h>
 #include <fmt/format.h>
@@ -9,6 +9,9 @@
 #include <array>
 
 static std::vector<ShockLink::VR::Overlay*> s_overlays;
+static std::vector<ShockLink::VR::TrackingReference*> s_trackingReferences;
+static std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_devices;
+static std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_prevDevices;
 
 void ShockLink::VR::VRSystem::RegisterOverlay(ShockLink::VR::Overlay* overlay)
 {
@@ -20,10 +23,17 @@ void ShockLink::VR::VRSystem::UnregisterOverlay(ShockLink::VR::Overlay* overlay)
 	s_overlays.erase(std::remove(s_overlays.begin(), s_overlays.end(), overlay), s_overlays.end());
 }
 
-static std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_devices;
-static std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> s_prevDevices;
+void ShockLink::VR::VRSystem::RegisterTrackingReference(ShockLink::VR::TrackingReference* reference)
+{
+	s_trackingReferences.push_back(reference);
+}
 
-void OnDeviceConnected(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
+void ShockLink::VR::VRSystem::UnregisterTrackingReference(ShockLink::VR::TrackingReference* reference)
+{
+	s_trackingReferences.erase(std::remove(s_trackingReferences.begin(), s_trackingReferences.end(), reference), s_trackingReferences.end());
+}
+
+void OnDeviceConnected(vr::TrackedDeviceIndex_t index, const vr::TrackedDevicePose_t& pose)
 {
 	auto deviceClass = vr::VRSystem()->GetTrackedDeviceClass(index);
 	const char* deviceClassStr;
@@ -51,22 +61,63 @@ void OnDeviceConnected(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
 			fmt::print("[DEVICE #{:0>2}] Unknown device class connected\n", index);
 			return;
 	}
+	for (auto reference : s_trackingReferences)
+	{
+		reference->OnDeviceConnected(index, deviceClass, pose);
+	}
+	for (auto overlay : s_overlays)
+	{
+		overlay->OnDeviceConnected(index, deviceClass, pose);
+	}
 }
-void OnDeviceDisconnected(std::uint32_t index)
+void OnDeviceDisconnected(vr::TrackedDeviceIndex_t index)
 {
 	fmt::print("[DEVICE #{:0>2}] Disconnected\n", index);
+	for (auto reference : s_trackingReferences)
+	{
+		reference->OnDeviceDisconnected(index);
+	}
+	for (auto overlay : s_overlays)
+	{
+		overlay->OnDeviceDisconnected(index);
+	}
 }
-void OnDevicePoseValidated(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
+void OnDevicePoseValidated(vr::TrackedDeviceIndex_t index, const vr::TrackedDevicePose_t& pose)
 {
 	fmt::print("[DEVICE #{:0>2}] Pose validated\n", index);
+	for (auto reference : s_trackingReferences)
+	{
+		reference->OnDevicePoseValidated(index, pose);
+	}
+	for (auto overlay : s_overlays)
+	{
+		overlay->OnDevicePoseValidated(index, pose);
+	}
 }
-void OnDevicePoseInvalidated(std::uint32_t index)
+void OnDevicePoseInvalidated(vr::TrackedDeviceIndex_t index)
 {
 	fmt::print("[DEVICE #{:0>2}] Pose invalidated\n", index);
+	for (auto reference : s_trackingReferences)
+	{
+		reference->OnDevicePoseInvalidated(index);
+	}
+	for (auto overlay : s_overlays)
+	{
+		overlay->OnDevicePoseInvalidated(index);
+	}
 }
-void OnDevicePoseUpdated(std::uint32_t index, const vr::TrackedDevicePose_t& pose)
+void OnDevicePoseUpdated(vr::TrackedDeviceIndex_t index, const vr::TrackedDevicePose_t& pose)
 {
+	for (auto reference : s_trackingReferences)
+	{
+		reference->OnDevicePoseUpdated(index, pose);
+	}
+	for (auto overlay : s_overlays)
+	{
+		overlay->OnDevicePoseUpdated(index, pose);
+	}
 }
+
 void ShockLink::VR::VRSystem::PollInput()
 {
 	auto system = vr::VRSystem();
@@ -79,7 +130,7 @@ void ShockLink::VR::VRSystem::PollInput()
 
 	system->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, s_devices.data(), NDEVICES);
 
-	for (std::uint32_t i = 0; i < NDEVICES; i++)
+	for (vr::TrackedDeviceIndex_t i = 0; i < NDEVICES; i++)
 	{
 		const auto& pose = s_devices[i];
 		const auto& prevPose = s_prevDevices[i];
@@ -92,12 +143,14 @@ void ShockLink::VR::VRSystem::PollInput()
 			}
 			else
 			{
-				OnDevicePoseInvalidated(i);
 				OnDeviceDisconnected(i);
+				continue;
 			}
 		}
-
-		if (!pose.bDeviceIsConnected) continue;
+		else if (!pose.bDeviceIsConnected)
+		{
+			continue;
+		}
 
 		if (prevPose.bPoseIsValid != pose.bPoseIsValid)
 		{
