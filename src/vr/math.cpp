@@ -24,8 +24,8 @@ constexpr bool ShockLink::VR::Math::IntersectRayPlane(const glm::vec3& rayOrigin
     // Calculate the dot product of the ray direction and the plane normal
     float denom = glm::dot(rayDirection, planeNormal);
 
-    // Check if the ray and plane are not parallel
-    if (glm::abs(denom) <= std::numeric_limits<float>::epsilon()) {
+    // Check if the ray and plane are facing same direction
+    if (denom <= std::numeric_limits<float>::epsilon()) {
         return false;
     }
 
